@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 project(c_exercise C)
 
 set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_FLAGS "-Wl,--wrap,malloc -Wl,--wrap,free")
 
 add_executable(prime prime.c)
 target_link_libraries(prime m)
@@ -12,7 +13,7 @@ add_custom_target(run_prime
 
 add_executable(magic magic_square.c)
 add_custom_target(run_magic
-        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/magic 3
+        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/magic 5
         DEPENDS magic)
 
 add_executable(merge_pointers_a merge_pointers_a.c)
@@ -29,6 +30,9 @@ add_custom_target(valgrind_merge_pointers_b
         DEPENDS merge_pointers_b)
 
 add_library(memmanager SHARED memmanager.c)
+target_link_libraries(magic memmanager)
+
+
 add_executable(mem_user memuser.c)
 target_link_libraries(mem_user memmanager)
 add_custom_target(run_mem_user
