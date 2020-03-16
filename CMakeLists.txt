@@ -11,7 +11,7 @@ add_custom_target(prime
         )
 add_custom_command(OUTPUT prime_run
         COMMAND ./c_prime_exercise 3
-        DEPENDS c_prime_exercise)
+        DEPENDS prime)
 add_custom_target(run_prime
         DEPENDS prime_run
         )
@@ -21,7 +21,7 @@ add_custom_target(magic
         )
 add_custom_command(OUTPUT magic_run
         COMMAND ./c_magic_square 3
-        DEPENDS c_magic_square)
+        DEPENDS magic)
 add_custom_target(run_magic
         DEPENDS magic_run
         )
