@@ -12,15 +12,15 @@ add_custom_target(run_prime
 
 add_executable(magic magic_square.c)
 add_custom_target(run_magic
-        COMMAND "${CMAKE_CURRENT_BINARY_DIR}/magic" 3
+        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/magic 3
         DEPENDS magic)
 
 add_executable(merge_pointers_a merge_pointers_a.c)
 add_custom_target(run_merge_pointers_a
-        COMMAND "${CMAKE_CURRENT_BINARY_DIR}/merge_pointers_a"
+        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/merge_pointers_a
         DEPENDS merge_pointers_a)
 
 add_executable(merge_pointers_b merge_pointers_b.c)
 add_custom_target(run_merge_pointers_b
-        COMMAND "${CMAKE_CURRENT_BINARY_DIR}/merge_pointers_b"
+        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/merge_pointers_b abc av
         DEPENDS merge_pointers_b)
