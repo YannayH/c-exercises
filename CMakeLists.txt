@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.15)
 project(c_exercise C)
 
 set(CMAKE_C_STANDARD 11)
@@ -27,3 +27,11 @@ add_custom_target(run_merge_pointers_b
 add_custom_target(valgrind_merge_pointers_b
         COMMAND valgrind ${CMAKE_CURRENT_BINARY_DIR}/merge_pointers_b abc av
         DEPENDS merge_pointers_b)
+
+add_executable(mem_user memuser.c memmanager.c)
+add_custom_target(run_mem_user
+        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/mem_user
+        DEPENDS mem_user)
+add_custom_target(valgrind_mem_user
+        COMMAND valgrind ${CMAKE_CURRENT_BINARY_DIR}/mem_user
+        DEPENDS mem_user)
