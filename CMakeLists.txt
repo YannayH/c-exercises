@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.16)
 project(c_exercise C)
 
 set(CMAKE_C_STANDARD 11)
@@ -14,3 +14,8 @@ add_executable(magic magic_square.c)
 add_custom_target(run_magic
         COMMAND "${CMAKE_CURRENT_BINARY_DIR}/magic" 3
         DEPENDS magic)
+
+add_executable(merge_pointers_a merge_pointers_a.c)
+add_custom_target(run_merge_pointers_a
+        COMMAND "${CMAKE_CURRENT_BINARY_DIR}/merge_pointers_a"
+        DEPENDS merge_pointers_a)
