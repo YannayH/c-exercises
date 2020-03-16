@@ -14,8 +14,8 @@ static struct AllocatedMemory **allocated_memory_blocks = NULL;
 
 __attribute__((constructor))
 static void initialize_manager() {
-    main_block = mmap(NULL, BLOCK_SIZE, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
-    allocated_memory_blocks = mmap(NULL, sizeof(struct AllocatedMemory*) * MAXIMUM_ALLOCATIONS, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+    main_block = mmap(NULL, BLOCK_SIZE, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+    allocated_memory_blocks = mmap(NULL, sizeof(struct AllocatedMemory*) * MAXIMUM_ALLOCATIONS, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
 
     memset(main_block, 0, BLOCK_SIZE);
     for (size_t i = 0; i < MAXIMUM_ALLOCATIONS; i ++) {
@@ -24,8 +24,10 @@ static void initialize_manager() {
 }
 
 void* __wrap_malloc(size_t size) {
-    printf("mallocing %d\n", size);
     size_t start_address = 0;
+    size += sizeof (struct AllocatedMemory);
+    printf("mallocing %d\n", size);
+
 
     for (size_t j = 0; j < MAXIMUM_ALLOCATIONS; j ++) {
         if (allocated_memory_blocks[j] != 0) {
@@ -41,7 +43,7 @@ void* __wrap_malloc(size_t size) {
     }
 
 
-    struct AllocatedMemory* allocated_memory_block = mmap(NULL, sizeof(struct AllocatedMemory), PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);;
+    struct AllocatedMemory* allocated_memory_block = main_block + start_address;
     allocated_memory_block->address=start_address;
     allocated_memory_block->size=size;
 
@@ -52,7 +54,7 @@ void* __wrap_malloc(size_t size) {
         }
     }
 
-    return (void*) main_block + allocated_memory_block->address;
+    return (void*) main_block + allocated_memory_block->address + sizeof(struct AllocatedMemory);
 }
 
 int __wrap_free(void* address) {
@@ -63,7 +65,6 @@ int __wrap_free(void* address) {
     for (size_t j = 0; j < MAXIMUM_ALLOCATIONS; j ++) {
         if (allocated_memory_blocks[j] != 0) {
             if ((uint64_t) (address - main_block) == allocated_memory_blocks[j]->address) {
-                munmap(allocated_memory_blocks[j], sizeof(struct AllocatedMemory));
                 allocated_memory_blocks[j] = 0;
                 return 0;
             }
@@ -75,13 +76,6 @@ int __wrap_free(void* address) {
 
 __attribute__((destructor))
 static void finalize_manager() {
-    for (size_t j = 0; j < MAXIMUM_ALLOCATIONS; j ++) {
-        if (allocated_memory_blocks[j] != 0) {
-            munmap(allocated_memory_blocks[j], sizeof(struct AllocatedMemory));
-            allocated_memory_blocks[j] = 0;
-        }
-    }
-
     munmap(allocated_memory_blocks, sizeof(struct AllocatedMemory*) * MAXIMUM_ALLOCATIONS);
     munmap(main_block, BLOCK_SIZE);
 
