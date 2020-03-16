@@ -17,7 +17,7 @@ char* merge_strings(char first_string[], char second_string[]) {
     assert_sorted_string(first_string, first_str_len);
     assert_sorted_string(second_string, second_str_len);
 
-    char* combined_string = malloc(sizeof(char) * (first_str_len + second_str_len));
+    char* combined_string = malloc(sizeof(char) * (first_str_len + second_str_len + 1));
     char* combined_str_ptr = combined_string;
 
     while (*first_string != 0 && *second_string != 0) {

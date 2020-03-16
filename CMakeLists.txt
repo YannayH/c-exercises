@@ -24,3 +24,6 @@ add_executable(merge_pointers_b merge_pointers_b.c)
 add_custom_target(run_merge_pointers_b
         COMMAND ${CMAKE_CURRENT_BINARY_DIR}/merge_pointers_b abc av
         DEPENDS merge_pointers_b)
+add_custom_target(valgrind_merge_pointers_b
+        COMMAND valgrind ${CMAKE_CURRENT_BINARY_DIR}/merge_pointers_b abc av
+        DEPENDS merge_pointers_b)
