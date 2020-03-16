@@ -7,7 +7,7 @@ struct Point {
 };
 
 void increment_point(struct Point* point, int size, int** square) {
-    int next_row = point->row == 0 ? size - 1 : point->row - 1;±
+    int next_row = point->row == 0 ? size - 1 : point->row - 1;
     int next_column = (point->column + 1) % size;
 
     if (square[next_row][next_column] != 0) {
@@ -36,6 +36,9 @@ int main(int argc, char** argv) {
 
     for (int i = 0; i < size; i ++) {
         square[i] = malloc(size * sizeof(int));
+        for (int j = 0; j < size; j ++) {
+            square[i][j] = 0;
+        }
     }
 
     struct Point point = {0, (size - 1) / 2};
