@@ -22,9 +22,9 @@ char* merge_strings(char first_string[], char second_string[]) {
 
     while (*first_string != 0 && *second_string != 0) {
         if (*first_string < *second_string) {
-            *combined_str_ptr++ = *first_string ++;
+            *combined_str_ptr++ = *first_string++;
         } else {
-            *combined_str_ptr++ = *second_string ++;
+            *combined_str_ptr++ = *second_string++;
         }
     }
 
