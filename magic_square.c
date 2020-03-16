@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct Point {
     int row;
@@ -21,24 +22,22 @@ void increment_point(struct Point* point, int size, int** square) {
 
 int main(int argc, char** argv) {
     if (argc != 2) {
-        printf("Usage: %s <size>", argv[0]);
+        printf("Usage: %s <size>\n", argv[0]);
         return 1;
     }
 
     int size = atoi(argv[1]);
 
     if (size % 2 != 1) {
-        printf("The algorithm is currently only implemented for odd numbers.");
-        return 1;
+        printf("The algorithm is currently only implemented for odd numbers.\n");
+        return 2;
     }
 
     int** square = (int**) malloc(size * sizeof(int*));
 
     for (int i = 0; i < size; i ++) {
         square[i] = malloc(size * sizeof(int));
-        for (int j = 0; j < size; j ++) {
-            square[i][j] = 0;
-        }
+        memset(square[i], 0, size);
     }
 
     struct Point point = {0, (size - 1) / 2};
