@@ -28,7 +28,9 @@ add_custom_target(valgrind_merge_pointers_b
         COMMAND valgrind ${CMAKE_CURRENT_BINARY_DIR}/merge_pointers_b abc av
         DEPENDS merge_pointers_b)
 
-add_executable(mem_user memuser.c memmanager.c)
+add_library(memmanager SHARED memmanager.c)
+add_executable(mem_user memuser.c)
+target_link_libraries(mem_user memmanager)
 add_custom_target(run_mem_user
         COMMAND ${CMAKE_CURRENT_BINARY_DIR}/mem_user
         DEPENDS mem_user)
