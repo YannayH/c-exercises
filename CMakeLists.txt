@@ -19,3 +19,8 @@ add_executable(merge_pointers_a merge_pointers_a.c)
 add_custom_target(run_merge_pointers_a
         COMMAND "${CMAKE_CURRENT_BINARY_DIR}/merge_pointers_a"
         DEPENDS merge_pointers_a)
+
+add_executable(merge_pointers_b merge_pointers_b.c)
+add_custom_target(run_merge_pointers_b
+        COMMAND "${CMAKE_CURRENT_BINARY_DIR}/merge_pointers_b"
+        DEPENDS merge_pointers_b)
