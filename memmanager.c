@@ -1,6 +1,7 @@
 #include <errno.h>
 #include <string.h>
 #include <stdio.h>
+#include <sys/mman.h>
 
 #include "memmanager.h"
 
@@ -10,14 +11,11 @@ static size_t BLOCK_SIZE = 2147483647;
 static void* main_block = NULL;
 static struct AllocatedMemory **allocated_memory_blocks = NULL;
 
-void* __real_malloc(size_t);
-void* __real_free(void*);
-
 
 __attribute__((constructor))
 static void initialize_manager() {
-    main_block = __real_malloc(BLOCK_SIZE);
-    allocated_memory_blocks = __real_malloc(sizeof(struct AllocatedMemory*) * MAXIMUM_ALLOCATIONS);
+    main_block = mmap(NULL, BLOCK_SIZE, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+    allocated_memory_blocks = mmap(NULL, sizeof(struct AllocatedMemory*) * MAXIMUM_ALLOCATIONS, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
 
     memset(main_block, 0, BLOCK_SIZE);
     for (size_t i = 0; i < MAXIMUM_ALLOCATIONS; i ++) {
@@ -42,7 +40,8 @@ void* __wrap_malloc(size_t size) {
         return NULL;
     }
 
-    struct AllocatedMemory* allocated_memory_block = __real_malloc(sizeof(struct AllocatedMemory));
+
+    struct AllocatedMemory* allocated_memory_block = mmap(NULL, sizeof(struct AllocatedMemory), PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);;
     allocated_memory_block->address=start_address;
     allocated_memory_block->size=size;
 
@@ -64,7 +63,7 @@ int __wrap_free(void* address) {
     for (size_t j = 0; j < MAXIMUM_ALLOCATIONS; j ++) {
         if (allocated_memory_blocks[j] != 0) {
             if ((uint64_t) (address - main_block) == allocated_memory_blocks[j]->address) {
-                __real_free(allocated_memory_blocks[j]);
+                munmap(allocated_memory_blocks[j], sizeof(struct AllocatedMemory));
                 allocated_memory_blocks[j] = 0;
                 return 0;
             }
@@ -78,13 +77,13 @@ __attribute__((destructor))
 static void finalize_manager() {
     for (size_t j = 0; j < MAXIMUM_ALLOCATIONS; j ++) {
         if (allocated_memory_blocks[j] != 0) {
-            __real_free(allocated_memory_blocks[j]);
+            munmap(allocated_memory_blocks[j], sizeof(struct AllocatedMemory));
             allocated_memory_blocks[j] = 0;
         }
     }
 
-    __real_free(allocated_memory_blocks);
-    __real_free(main_block);
+    munmap(allocated_memory_blocks, sizeof(struct AllocatedMemory*) * MAXIMUM_ALLOCATIONS);
+    munmap(main_block, BLOCK_SIZE);
 
     allocated_memory_blocks = NULL;
     main_block = NULL;
